@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 
 dotenv.config()
 
-export default function ValidatTojenMiddleware(req: Request, res: Response, next: NextFunction){
+export default function ValidatTokenMiddleware(req: Request, res: Response, next: NextFunction){
     const bearerToken = req.headers.authorization;
     const token: string | undefined = bearerToken?.replace("Bearer ", "")
 
@@ -15,8 +15,12 @@ export default function ValidatTojenMiddleware(req: Request, res: Response, next
     try{
         const userId = jwt.verify(token, process.env.JWT_PRIVATE_KEY ?? "")
         res.locals.userId = userId
+        
+        next()
+        
     } catch (error) {
         console.log("teste")
         res.status(422).send("token is not valid")
     }
+    
 }
