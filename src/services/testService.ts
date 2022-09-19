@@ -83,9 +83,6 @@ async function checkTestName(name: string){
 
 }
 
-export async function getTestsByDiscipline(){
-    
-}
 
 export async function getTestsCategory(){
     const testsByDiscipline = await testsRepository.getTestsCategory()

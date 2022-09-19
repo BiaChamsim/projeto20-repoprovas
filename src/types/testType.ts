@@ -6,14 +6,7 @@ export interface TestByDiscipline{
     number: number;
     disciplines:{
         name: string;
-        TeachersDisciplines?: {
-            Test:{
-                categories:{
-                    name:string,
-                    Test: Test[]
-                }
-            }[]
-        }[],
+        TeachersDisciplines?: any;
         categories?: any
     }[]
 }
