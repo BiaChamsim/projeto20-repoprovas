@@ -102,6 +102,7 @@ describe('testa a rota /test', () => {
 
         const createdTestResponse = await supertest(app).post('/test').set('Authorization', `Bearer ${token}`).send(testBody)
         expect(createdTestResponse.status).toBe(201)
+        expect(createdTestResponse.body).not.toBeNull()
         
     })
 
@@ -141,8 +142,67 @@ describe('testa a rota /test', () => {
 
     })
 
-    it('retorna 404 se category, discipline e teacher não constarem no banco de dados', async () => {
-        
+    it("retorna 404 se 'category' não constar no banco de dados", async () => {
+        const signUp = await signUpFactory();
+        const signIn = {email: signUp.email, password: signUp.password}
+        const test = await createPost();
+        console.log(test)
+
+        const nonExistentCategory = {...test, category: "non existent"}
+
+        const registerResponse = await supertest(app).post('/signup').send(signUp)
+        const loginResponse = await supertest(app).post('/signin').send(signIn)
+
+        const token = loginResponse.body.token
+
+        expect(registerResponse.status).toBe(201)
+        expect(loginResponse.status).toBe(200)
+
+        const registerTestResponse = await supertest(app).post('/test').set('Authorization', `Bearer ${token}`).send(nonExistentCategory)
+
+        expect(registerTestResponse.status).toBe(404)
+    })
+
+    it("retorna 404 se 'discipline' não constar no banco de dados", async () => {
+        const signUp = await signUpFactory();
+        const signIn = {email: signUp.email, password: signUp.password}
+        const test = await createPost();
+        console.log(test)
+
+        const nonExistentCategory = {...test, subject: "non existent"}
+
+        const registerResponse = await supertest(app).post('/signup').send(signUp)
+        const loginResponse = await supertest(app).post('/signin').send(signIn)
+
+        const token = loginResponse.body.token
+
+        expect(registerResponse.status).toBe(201)
+        expect(loginResponse.status).toBe(200)
+
+        const registerTestResponse = await supertest(app).post('/test').set('Authorization', `Bearer ${token}`).send(nonExistentCategory)
+
+        expect(registerTestResponse.status).toBe(404)
+    })
+
+    it("retorna 404 se 'teacher' não constar no banco de dados", async () => {
+        const signUp = await signUpFactory();
+        const signIn = {email: signUp.email, password: signUp.password}
+        const test = await createPost();
+        console.log(test)
+
+        const nonExistentCategory = {...test, teacher: "non existent"}
+
+        const registerResponse = await supertest(app).post('/signup').send(signUp)
+        const loginResponse = await supertest(app).post('/signin').send(signIn)
+
+        const token = loginResponse.body.token
+
+        expect(registerResponse.status).toBe(201)
+        expect(loginResponse.status).toBe(200)
+
+        const registerTestResponse = await supertest(app).post('/test').set('Authorization', `Bearer ${token}`).send(nonExistentCategory)
+
+        expect(registerTestResponse.status).toBe(404)
     })
 
 })

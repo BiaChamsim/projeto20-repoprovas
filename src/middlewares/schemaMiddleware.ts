@@ -7,11 +7,12 @@ export default function validateSchema(schema: ObjectSchema){
 
         const {error} = schema.validate(req.body, {abortEarly: false})
     
+        
         if(error){
             const errors: string[] = error.details.map(err => err.message ) 
             return res.status(422).send(errors)
         }
-    
+        
         next()
 
     }
