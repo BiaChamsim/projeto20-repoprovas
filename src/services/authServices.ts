@@ -9,7 +9,7 @@ export async function signUp(email: string, password: string){
 
     const newUser: UserAuth = {email: email, password: encryptedPassword}
 
-    await authRepository.insert(newUser)
+    await authRepository.insert(newUser);
 }
 
 

@@ -1,11 +1,13 @@
 import { Router } from "express";
 import ValidatTokenMiddleware from "../middlewares/validateToken"
-import { postTests } from "../controllers/testController";
+import validateSchema from "../middlewares/schemaMiddleware";
+import postTestSchema from "../schemas/postTestSchema";
+import { postTests, getTestsByDiscipline } from "../controllers/testController";
 
 
 const testRouter = Router();
 
-testRouter.post("/test", ValidatTokenMiddleware, postTests)
-//testRouter.post("/test")
+testRouter.post("/test", ValidatTokenMiddleware, validateSchema(postTestSchema), postTests)
+testRouter.get("/test", ValidatTokenMiddleware, getTestsByDiscipline)
 
 export default testRouter;

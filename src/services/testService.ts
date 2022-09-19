@@ -1,8 +1,10 @@
+import { Discipline, TeachersDisciplines } from "@prisma/client";
 import * as categoryRepository from "../repositories/categoryRepository";
 import * as disciplineRepository from "../repositories/disciplineRepository";
 import * as teacherRepository from "../repositories/teacherRepository";
 import * as teachersDischiplinesRepository from "../repositories/teachersDisciplineRepository";
 import * as testsRepository from "../repositories/testsRepository";
+import {TestByDiscipline} from "../types/testType";
 
 
 export async function postTests(name: string, pdfUrl:string, category: string, subject: string, teacher: string){
@@ -80,3 +82,41 @@ async function checkTestName(name: string){
     }
 
 }
+
+export async function getTestsByDiscipline(){
+    
+}
+
+export async function getTestsCategory(){
+    const testsByDiscipline = await testsRepository.getTestsCategory()
+    const formatedTest : TestByDiscipline[] = []
+    
+    for(let i=0; i<testsByDiscipline.length; i++){
+        const disciplines = testsByDiscipline[i].disciplines
+
+        formatedTest.push(testsByDiscipline[i])
+
+        for(let j=0; j<disciplines.length; j++){
+            const teachersDisciplines = disciplines[j].TeachersDisciplines
+            const testsByCategory: object[] = []
+
+            for(let x=0; x<teachersDisciplines.length; x++){
+                const test = teachersDisciplines[x].Test
+                const categories: string[] = []
+
+                for(let y=0; y<test.length; y++){
+                    if(!categories.includes(test[y].categories.name)){
+                        testsByCategory.push(test[y].categories)
+                        categories.push(test[y].categories.name)
+                    }
+                }
+            }
+        
+            delete formatedTest[i].disciplines[j].TeachersDisciplines
+            formatedTest[i].disciplines[j].categories = testsByCategory
+        }
+
+    }
+    return formatedTest;
+}
+

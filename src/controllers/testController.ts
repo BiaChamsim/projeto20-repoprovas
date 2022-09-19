@@ -3,7 +3,6 @@ import * as testService from "../services/testService";
 
 export async function postTests(req: Request, res: Response){
     try{
-        console.log("teste")
         const {name, pdfUrl, category, subject, teacher} = req.body;
         //const userId = res.locals.userId.userId
 
@@ -22,3 +21,14 @@ export async function postTests(req: Request, res: Response){
         res.sendStatus(500);
     }
 }
+
+export async function getTestsByDiscipline(req: Request, res: Response){
+    try{
+        const tests = await testService.getTestsCategory();
+        res.send(tests)
+
+    }catch(error){
+        console.log(error)
+        res.sendStatus(500)
+    }
+} 

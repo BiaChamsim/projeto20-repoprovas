@@ -1,7 +1,7 @@
 import joi from "joi";
 
 const postTestSchema = joi.object({
-    email: joi.string().email().required(),
+    name: joi.string().required(),
     pdfUrl: joi.string().uri().required(),
     category: joi.string().required(),
     subject: joi.string().required(),

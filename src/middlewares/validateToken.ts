@@ -20,7 +20,7 @@ export default function ValidatTokenMiddleware(req: Request, res: Response, next
         
     } catch (error) {
         console.log("teste")
-        res.status(422).send("token is not valid")
+        res.status(401).send("token is not valid")
     }
     
 }
