@@ -4,7 +4,7 @@ import * as disciplineRepository from "../repositories/disciplineRepository";
 import * as teacherRepository from "../repositories/teacherRepository";
 import * as teachersDischiplinesRepository from "../repositories/teachersDisciplineRepository";
 import * as testsRepository from "../repositories/testsRepository";
-import {TestByDiscipline} from "../types/testType";
+import {TestByDiscipline, TestByTeacher} from "../types/testType";
 
 
 export async function postTests(name: string, pdfUrl:string, category: string, subject: string, teacher: string){
@@ -89,34 +89,72 @@ export async function getTestsByDiscipline(){
 
 export async function getTestsCategory(){
     const testsByDiscipline = await testsRepository.getTestsCategory()
-    const formatedTest : TestByDiscipline[] = []
+    const formatedTest : TestByDiscipline[] = [...testsByDiscipline]
     
-    for(let i=0; i<testsByDiscipline.length; i++){
-        const disciplines = testsByDiscipline[i].disciplines
-
-        formatedTest.push(testsByDiscipline[i])
-
-        for(let j=0; j<disciplines.length; j++){
-            const teachersDisciplines = disciplines[j].TeachersDisciplines
-            const testsByCategory: object[] = []
-
-            for(let x=0; x<teachersDisciplines.length; x++){
-                const test = teachersDisciplines[x].Test
-                const categories: string[] = []
-
-                for(let y=0; y<test.length; y++){
-                    if(!categories.includes(test[y].categories.name)){
-                        testsByCategory.push(test[y].categories)
-                        categories.push(test[y].categories.name)
-                    }
-                }
-            }
+    for(let i = 0; i < testsByDiscipline.length; i++) {
+        const disciplines = testsByDiscipline[i].disciplines;
         
-            delete formatedTest[i].disciplines[j].TeachersDisciplines
-            formatedTest[i].disciplines[j].categories = testsByCategory
+        for(let j = 0; j < disciplines.length; j++) {
+          const teachersDisciplines = disciplines[j].TeachersDisciplines;
+          const testsByCategory = [];
+    
+          for(let k = 0; k < teachersDisciplines.length; k++) {
+            const emptyTest = teachersDisciplines[k].Test;
+    
+            for(let l = 0; l < emptyTest.length; l++) {
+              testsByCategory.push({
+                name: emptyTest[l].categories.name,
+                tests: emptyTest[l].categories.Test.map(test => {
+                  const formatedTest = {
+                    name: test.name,
+                    pdfUrl: test.pdfUrl,
+                    teacher: test.teachersDisciplines.teachers.name
+                  };
+    
+                  return formatedTest;
+                })
+              });
+            }
+          }
+    
+          delete formatedTest[i].disciplines[j].TeachersDisciplines;
+          formatedTest[i].disciplines[j].categories = testsByCategory;
         }
-
-    }
+      }
+      
     return formatedTest;
 }
 
+export async function getTestsTeacher() {
+    const tests = await testsRepository.getTestsGroupByTeacher();
+    const formatedTestsTeacher: TestByTeacher[] = { ...tests };
+  
+    for(let i = 0; i < tests.length; i++) {
+      const teachersDisciplines = tests[i].TeachersDisciplines;
+  
+      for(let j = 0; j < teachersDisciplines.length; j++) {
+        const emptyTest = teachersDisciplines[j].Test;
+        const testsByCategory = [];
+  
+          for(let k = 0; k < emptyTest.length; k++) {
+            testsByCategory.push({
+              name: emptyTest[k].categories.name,
+              tests: emptyTest[k].categories.Test.map(test => {
+                const formatedTest = {
+                  name: test.name,
+                  pdfUrl: test.pdfUrl,
+                  discipline: test.teachersDisciplines.disciplines.name
+                };
+  
+                return formatedTest;
+              })
+            });
+        }
+  
+        delete formatedTestsTeacher[i].TeachersDisciplines
+        formatedTestsTeacher[i].categories = testsByCategory;
+      }
+    }
+  
+    return tests;
+  }

@@ -18,3 +18,9 @@ export interface TestByDiscipline{
     }[]
 }
 
+export interface TestByTeacher {
+    name: string;
+    TeachersDisciplines?: any;
+    categories?: any;
+  };
+

@@ -32,3 +32,9 @@ export async function getTestsByDiscipline(req: Request, res: Response){
         res.sendStatus(500)
     }
 } 
+
+export async function getTestsGroupByTeacher(req: Request, res: Response) {
+    const tests = await testService.getTestsTeacher();
+  
+    res.status(200).send(tests);
+  }
